@@ -36,7 +36,7 @@ jobs:
       - name: Run the application
         run: |
           ls -l
-          pm2 status || true
+          pm2 status 
           pm2 delete node-app || true
           pm2 start "npm start" --name node-app
           pm2 save
