@@ -78,7 +78,7 @@ jobs:
 
       - name: Restart Application with PM2
         run: |
-          pm2 status || true
+          pm2 status 
           pm2 delete node-app || true
           pm2 start "npm start" --name node-app
           pm2 save
