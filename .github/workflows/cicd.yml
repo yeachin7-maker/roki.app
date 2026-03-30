@@ -1,11 +1,8 @@
-
-
-
 name: CI/CD Pipeline
 
 on:
   push:
-    
+   
 
 jobs:
   test:
@@ -39,46 +36,45 @@ jobs:
         with:
           node-version: 22
 
-    -   name: Create build folder
-	  run: |
-    	  mkdir -p build
-  	  echo "Build successful" > build/status.txt
-          ls -lrt
+      - name: Create build folder
+        run: |
+          mkdir -p build
+          echo "Build successful" > build/status.txt
+          echo "Checking build folder:"
+          ls -lrt build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: build_folder
-          path: ./build
+          path: build/
 
   deploy:
     runs-on: self-hosted
-    needs: build
+    needs: [test, build]
 
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      # ✅ NEW: Download artifact
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: build_folder
-          path: ./build
+          path: build/
 
-      # ✅ NEW: Show artifact files
       - name: Show artifact files
         run: |
-          ls -lrt 
+          ls -lrt build/
 
-    
+     
 
       - name: Install dependencies
         run: npm install
 
       - name: Restart Application with PM2
         run: |
-          pm2 status 
+          pm2 status || true
           pm2 delete node-app || true
           pm2 start "npm start" --name node-app
           pm2 save
